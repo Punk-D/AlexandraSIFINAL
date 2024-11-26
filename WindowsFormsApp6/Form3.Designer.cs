@@ -52,7 +52,7 @@
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(31, 390);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(209, 47);
             this.button1.TabIndex = 22;
@@ -63,7 +63,7 @@
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(31, 310);
-            this.button2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button2.Margin = new System.Windows.Forms.Padding(4);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(209, 47);
             this.button2.TabIndex = 23;
@@ -73,17 +73,18 @@
             // button3
             // 
             this.button3.Location = new System.Drawing.Point(31, 224);
-            this.button3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(209, 47);
             this.button3.TabIndex = 24;
             this.button3.Text = "Transfer prin numar de telefon";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button4
             // 
             this.button4.Location = new System.Drawing.Point(31, 153);
-            this.button4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button4.Margin = new System.Windows.Forms.Padding(4);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(209, 47);
             this.button4.TabIndex = 25;
@@ -97,7 +98,7 @@
             this.cmbCards.FormattingEnabled = true;
             this.cmbCards.ItemHeight = 25;
             this.cmbCards.Location = new System.Drawing.Point(31, 95);
-            this.cmbCards.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cmbCards.Margin = new System.Windows.Forms.Padding(4);
             this.cmbCards.Name = "cmbCards";
             this.cmbCards.Size = new System.Drawing.Size(209, 29);
             this.cmbCards.TabIndex = 26;
@@ -127,7 +128,7 @@
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label1);
             this.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form3";
             this.Text = "Form3";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

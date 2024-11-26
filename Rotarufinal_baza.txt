@@ -1,0 +1,125 @@
+-- Users Table
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY,
+    Names NVARCHAR(100) NOT NULL,
+    Surname NVARCHAR(100) NOT NULL,
+	Phone_number varchar(255)
+);
+ALTER TABLE Cards
+ Balance Decimal(18,2) DEFAULT 0;
+
+
+-- Accounts Table
+CREATE TABLE Accounts (
+    AccountID INT IDENTITY(1,1) PRIMARY KEY,
+    Logins NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(100) NOT NULL,
+    Passwords NVARCHAR(100) NOT NULL,
+    UserID INT NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Cards Table
+CREATE TABLE Cards (
+    CardNo NVARCHAR(16) PRIMARY KEY,
+    ExpiryDate DATETIME NOT NULL,
+    CVC NVARCHAR(3) NOT NULL,
+    UserID INT NOT NULL,
+	Balance Decimal(18,2),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Transactions Table
+CREATE TABLE Transactions (
+    TransactionID INT IDENTITY(1,1) PRIMARY KEY,
+    SenderCardNo NVARCHAR(16) NOT NULL,
+    GetterCardNo NVARCHAR(16) NOT NULL,
+    Amount DECIMAL(18, 2) NOT NULL,
+    TransactionDate DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (SenderCardNo) REFERENCES Cards(CardNo),
+    FOREIGN KEY (GetterCardNo) REFERENCES Cards(CardNo)
+);
+
+CREATE TABLE T2C_Receivers (
+    ReceiverID INT IDENTITY(1,1) PRIMARY KEY,
+    Code NVARCHAR(10) NOT NULL UNIQUE,
+    UserID INT NOT NULL,
+    Amount DECIMAL(18, 2) NOT NULL,
+    CreatedDate DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+
+CREATE PROCEDURE GenerateT2CReceiver
+    @UserID INT,
+    @Amount DECIMAL(18, 2)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Generate a unique 10-character alphanumeric code
+    DECLARE @Code NVARCHAR(10);
+    SET @Code = LEFT(NEWID(), 10); -- First 10 characters of a GUID
+
+    -- Insert into the T2C_Receivers table
+    INSERT INTO T2C_Receivers (Code, UserID, Amount)
+    VALUES (@Code, @UserID, @Amount);
+
+    -- Return the generated code
+    SELECT @Code AS GeneratedCode;
+END;
+
+
+CREATE PROCEDURE AddCardToUser
+    @UserID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @CardNo NVARCHAR(16) = CAST(ABS(CHECKSUM(NEWID())) AS NVARCHAR(16));
+    DECLARE @CVC NVARCHAR(3) = RIGHT(CAST(ABS(CHECKSUM(NEWID())) AS NVARCHAR(3)), 3);
+    DECLARE @ExpiryDate DATETIME = DATEADD(YEAR, 2, GETDATE());
+
+    INSERT INTO Cards (CardNo, ExpiryDate, CVC, UserID)
+    VALUES (@CardNo, @ExpiryDate, @CVC, @UserID);
+
+    SELECT @CardNo AS GeneratedCardNo, @CVC AS GeneratedCVC, @ExpiryDate AS ExpiryDate;
+END;
+
+CREATE OR ALTER PROCEDURE DoTransaction
+    @SenderCardNo NVARCHAR(16),
+    @GetterCardNo NVARCHAR(16),
+    @Amount DECIMAL(18, 2)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Check if sender's balance covers the transaction amount
+    DECLARE @SenderBalance DECIMAL(18, 2);
+    SELECT @SenderBalance = Balance FROM Cards WHERE CardNo = @SenderCardNo;
+
+    IF (@SenderBalance >= @Amount)
+    BEGIN
+        -- Deduct the amount from sender's card balance
+        UPDATE Cards
+        SET Balance = Balance - @Amount
+        WHERE CardNo = @SenderCardNo;
+
+        -- Add the amount to the getter's card balance
+        UPDATE Cards
+        SET Balance = Balance + @Amount
+        WHERE CardNo = @GetterCardNo;
+
+        -- Record the transaction
+        INSERT INTO Transactions (SenderCardNo, GetterCardNo, Amount, TransactionDate)
+        VALUES (@SenderCardNo, @GetterCardNo, @Amount, GETDATE());
+
+        PRINT 'Transaction completed successfully.';
+    END
+    ELSE
+    BEGIN
+        PRINT 'Transaction failed: Insufficient funds.';
+    END;
+END;
+
+

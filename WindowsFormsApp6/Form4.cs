@@ -13,7 +13,7 @@ namespace WindowsFormsApp6
 {
     public partial class Form4 : Form
     {
-        public static string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=ROTARUSIFINAL;Integrated Security=true;";
+        public static string connectionString = @"Server=(localdb)\Local;Database=ROTARUSIFINAL;Integrated Security=true;";
         SqlConnection connection = new SqlConnection(connectionString);
         public Form4(int u)
         {
@@ -47,12 +47,34 @@ namespace WindowsFormsApp6
             string receiverCardNo = txtReceiverCard.Text;
             decimal amount = decimal.Parse(txtAmount.Text);
 
-            // Get the selected sender card from the combo box (just like the previous steps)
-            string senderCardNo = cmbCards.SelectedItem.ToString(); // Example: "<Last 4 digits of card no>"
+            // Get the selected sender card's last 4 digits from the combo box
+            if (cmbCards.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a sender card.");
+                return;
+            }
+
+            string selectedCardEnding = cmbCards.SelectedItem.ToString().Split(':')[0].Trim(); // Get the last 4 digits
+
+            string senderCardNo = null;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
+
+                // Fetch the full card number based on the last 4 digits for the logged-in user
+                SqlCommand cmdFetchCard = new SqlCommand(
+                    "SELECT CardNo FROM Cards WHERE UserID = @UserID AND RIGHT(CardNo, 4) = @CardEnding", conn);
+                cmdFetchCard.Parameters.AddWithValue("@UserID", userID);
+                cmdFetchCard.Parameters.AddWithValue("@CardEnding", selectedCardEnding);
+
+                senderCardNo = cmdFetchCard.ExecuteScalar() as string;
+
+                if (string.IsNullOrEmpty(senderCardNo))
+                {
+                    MessageBox.Show("Could not find the full card number for the selected card.");
+                    return;
+                }
 
                 // Call the stored procedure to perform the transaction
                 SqlCommand cmd = new SqlCommand("DoTransaction", conn);

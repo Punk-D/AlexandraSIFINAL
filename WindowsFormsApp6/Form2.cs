@@ -18,7 +18,7 @@ namespace WindowsFormsApp6
         {
             InitializeComponent();
         }
-        public static string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=ROTARUSIFINAL;Integrated Security=true;";
+        public static string connectionString = @"Server=(localdb)\Local;Database=ROTARUSIFINAL;Integrated Security=true;";
         SqlConnection connection = new SqlConnection(connectionString);
         private void button2_Click(object sender, EventArgs e)
         {

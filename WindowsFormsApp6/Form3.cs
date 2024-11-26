@@ -21,10 +21,11 @@ namespace WindowsFormsApp6
             MenuForm_Load();
         }
         int LoggedInUserID;
-        public static string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=ROTARUSIFINAL;Integrated Security=true;";
+        public static string connectionString = @"Server=(localdb)\Local;Database=ROTARUSIFINAL;Integrated Security=true;";
         SqlConnection connection = new SqlConnection(connectionString);
         private void MenuForm_Load()
         {
+            cmbCards.Items.Clear();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -113,6 +114,16 @@ namespace WindowsFormsApp6
             this.Hide();
             form4.ShowDialog();
             this.Show();
+            MenuForm_Load();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Form5 form5 = new Form5(LoggedInUserID);
+            this.Hide();
+            form5.ShowDialog();
+            this.Show();
+            MenuForm_Load();
         }
     }
 }
