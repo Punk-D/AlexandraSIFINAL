@@ -95,5 +95,15 @@ namespace WindowsFormsApp6
             }
 
         }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtReceiverCard_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

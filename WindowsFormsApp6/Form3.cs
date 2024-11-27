@@ -125,5 +125,19 @@ namespace WindowsFormsApp6
             this.Show();
             MenuForm_Load();
         }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Form6 form6 = new Form6(LoggedInUserID);
+            this.Hide();
+            form6.ShowDialog();
+            this.Show();
+            MenuForm_Load();
+        }
     }
 }
